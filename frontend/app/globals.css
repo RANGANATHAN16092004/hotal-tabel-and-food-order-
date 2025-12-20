@@ -26,6 +26,21 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+/* Make form inputs consistent across the app */
+@layer base {
+  input,
+  textarea,
+  select {
+    @apply bg-white text-gray-900 placeholder-gray-400;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
+    opacity: 1; /* ensure placeholder is visible */
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

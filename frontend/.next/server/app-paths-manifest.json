@@ -1,7 +1,7 @@
 {
-  "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/register/page": "app/admin/register/page.js",
+  "/admin/orders/page": "app/admin/orders/page.js",
   "/admin/profile/page": "app/admin/profile/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/page": "app/page.js"
+  "/[hotelId]/order/page": "app/[hotelId]/order/page.js",
+  "/[hotelId]/menu/page": "app/[hotelId]/menu/page.js",
+  "/[hotelId]/profile/page": "app/[hotelId]/profile/page.js"
 }
