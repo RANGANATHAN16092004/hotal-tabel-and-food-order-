@@ -1,7 +1,0 @@
-{
-  "/admin/orders/page": "app/admin/orders/page.js",
-  "/admin/profile/page": "app/admin/profile/page.js",
-  "/[hotelId]/order/page": "app/[hotelId]/order/page.js",
-  "/[hotelId]/menu/page": "app/[hotelId]/menu/page.js",
-  "/[hotelId]/profile/page": "app/[hotelId]/profile/page.js"
-}
