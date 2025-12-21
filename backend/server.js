@@ -45,10 +45,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
+app.get("/", (req, res) => {
+  res.send("Backend running on Vercel 🚀");
 });
 
+// ❌ DO NOT use app.listen() in Vercel
+export default app;
 
