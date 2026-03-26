@@ -13,11 +13,11 @@ router.use(authMiddleware);
 router.get('/profile', async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.hotelId).select('-password');
-    
+
     if (!hotel) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Hotel not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Hotel not found'
       });
     }
 
@@ -27,10 +27,10 @@ router.get('/profile', async (req, res) => {
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -40,19 +40,23 @@ router.get('/profile', async (req, res) => {
 // @access  Private
 router.put('/profile', async (req, res) => {
   try {
-    const { name, phone, address } = req.body;
-    
+    const { name, email, secondaryEmails, phone, address, logo, coverImage } = req.body;
+
     const hotel = await Hotel.findById(req.hotelId);
     if (!hotel) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Hotel not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Hotel not found'
       });
     }
 
     if (name) hotel.name = name;
+    if (email) hotel.email = email;
+    if (secondaryEmails !== undefined) hotel.secondaryEmails = secondaryEmails;
     if (phone) hotel.phone = phone;
     if (address !== undefined) hotel.address = address;
+    if (logo !== undefined) hotel.logo = logo;
+    if (coverImage !== undefined) hotel.coverImage = coverImage;
 
     await hotel.save();
 
@@ -63,17 +67,20 @@ router.put('/profile', async (req, res) => {
         id: hotel._id,
         name: hotel.name,
         email: hotel.email,
+        secondaryEmails: hotel.secondaryEmails,
         phone: hotel.phone,
         address: hotel.address,
+        logo: hotel.logo,
+        coverImage: hotel.coverImage,
         qrCode: hotel.qrCode
       }
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -84,11 +91,11 @@ router.put('/profile', async (req, res) => {
 router.get('/qr', async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.hotelId).select('-password');
-    
+
     if (!hotel) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Hotel not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Hotel not found'
       });
     }
 
@@ -111,14 +118,25 @@ router.get('/qr', async (req, res) => {
     });
   } catch (error) {
     console.error('Get QR code error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
 
 

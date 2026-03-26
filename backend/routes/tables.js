@@ -13,7 +13,7 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const tables = await Table.find({ hotelId: req.hotelId }).sort({ tableNumber: 1 });
-    
+
     res.json({
       success: true,
       count: tables.length,
@@ -21,10 +21,10 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Get tables error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -39,24 +39,24 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        errors: errors.array() 
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
       });
     }
 
     const { tableNumber, capacity, status } = req.body;
 
     // Check if table number already exists for this hotel
-    const existingTable = await Table.findOne({ 
-      hotelId: req.hotelId, 
-      tableNumber 
+    const existingTable = await Table.findOne({
+      hotelId: req.hotelId,
+      tableNumber
     });
 
     if (existingTable) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Table number already exists' 
+      return res.status(400).json({
+        success: false,
+        message: 'Table number already exists'
       });
     }
 
@@ -77,15 +77,15 @@ router.post('/', [
   } catch (error) {
     console.error('Create table error:', error);
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Table number already exists' 
+      return res.status(400).json({
+        success: false,
+        message: 'Table number already exists'
       });
     }
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -100,38 +100,38 @@ router.put('/:id', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        errors: errors.array() 
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
       });
     }
 
     const { tableNumber, capacity, status } = req.body;
 
-    const table = await Table.findOne({ 
-      _id: req.params.id, 
-      hotelId: req.hotelId 
+    const table = await Table.findOne({
+      _id: req.params.id,
+      hotelId: req.hotelId
     });
 
     if (!table) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Table not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Table not found'
       });
     }
 
     if (tableNumber && tableNumber !== table.tableNumber) {
       // Check if new table number already exists
-      const existingTable = await Table.findOne({ 
-        hotelId: req.hotelId, 
+      const existingTable = await Table.findOne({
+        hotelId: req.hotelId,
         tableNumber,
         _id: { $ne: req.params.id }
       });
 
       if (existingTable) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Table number already exists' 
+        return res.status(400).json({
+          success: false,
+          message: 'Table number already exists'
         });
       }
       table.tableNumber = tableNumber;
@@ -150,15 +150,15 @@ router.put('/:id', [
   } catch (error) {
     console.error('Update table error:', error);
     if (error.code === 11000) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Table number already exists' 
+      return res.status(400).json({
+        success: false,
+        message: 'Table number already exists'
       });
     }
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -168,29 +168,29 @@ router.put('/:id', [
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    const table = await Table.findOne({ 
-      _id: req.params.id, 
-      hotelId: req.hotelId 
+    const table = await Table.findOne({
+      _id: req.params.id,
+      hotelId: req.hotelId
     });
 
     if (!table) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Table not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Table not found'
       });
     }
 
     // Check if table has active orders
     const Order = require('../models/Order');
-    const activeOrders = await Order.find({ 
+    const activeOrders = await Order.find({
       tableId: req.params.id,
       status: { $in: ['pending', 'preparing', 'ready'] }
     });
 
     if (activeOrders.length > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Cannot delete table with active orders' 
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete table with active orders'
       });
     }
 
@@ -202,14 +202,47 @@ router.delete('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Delete table error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
 
+// @route   PUT /api/tables/:id/layout
+// @desc    Update a table's layout position
+// @access  Private
+router.put('/:id/layout', async (req, res) => {
+  try {
+    const { layout } = req.body;
+    const table = await Table.findOne({ _id: req.params.id, hotelId: req.hotelId });
+
+    if (!table) {
+      return res.status(404).json({ success: false, message: 'Table not found' });
+    }
+
+    table.x = layout.x;
+    table.y = layout.y;
+    await table.save();
+
+    res.json({ success: true, table });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
 
 

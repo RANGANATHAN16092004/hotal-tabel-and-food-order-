@@ -88,6 +88,18 @@ The backend API will be running on `http://localhost:5000`
 
 ### Frontend Setup
 
+#### Optional: Enable OTP CAPTCHA (Customer phone lookups)
+
+To require CAPTCHA before sending OTPs from the customer phone lookup UI add the following to your frontend environment (e.g. `.env.local`):
+
+```
+NEXT_PUBLIC_OTP_REQUIRE_CAPTCHA=true
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your-site-key-here
+```
+
+If you do not have a reCAPTCHA site secret for server validation, the backend supports a development fallback token — set `captchaToken: 'dev'` when sending requests (only recommended for local testing).
+
+
 1. Navigate to the frontend directory:
 ```bash
 cd frontend
@@ -205,3 +217,14 @@ ISC
 
 
 "# Hotel-Table-booking-and-Menu-Ordering" 
+
+
+
+
+
+
+
+
+
+
+

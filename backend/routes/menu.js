@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {
   try {
     const { category } = req.query;
     const query = { hotelId: req.hotelId };
-    
+
     if (category) {
       query.category = category;
     }
 
     const menuItems = await MenuItem.find(query).sort({ category: 1, name: 1 });
-    
+
     res.json({
       success: true,
       count: menuItems.length,
@@ -28,10 +28,10 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Get menu error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -47,13 +47,13 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        errors: errors.array() 
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
       });
     }
 
-    const { name, description, price, category, image, available } = req.body;
+    const { name, description, price, category, image, available, pointsRequired, pointsEarned, happyHourPrice, happyHourStartTime, happyHourEndTime } = req.body;
 
     const menuItem = new MenuItem({
       hotelId: req.hotelId,
@@ -62,10 +62,24 @@ router.post('/', [
       price,
       category,
       image,
-      available: available !== undefined ? available : true
+      available: available !== undefined ? available : true,
+      pointsRequired: pointsRequired || 0,
+      pointsEarned: pointsEarned || 0,
+      happyHourPrice: happyHourPrice,
+      happyHourStartTime: happyHourStartTime || "16:00",
+      happyHourEndTime: happyHourEndTime || "18:00"
     });
 
     await menuItem.save();
+
+    // Emit WebSocket event
+    const io = req.app ? req.app.get('io') : null;
+    if (io) {
+      io.to(`hotel-${req.hotelId}`).emit('menu-updated', {
+        itemId: menuItem._id,
+        action: 'create'
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -74,10 +88,10 @@ router.post('/', [
     });
   } catch (error) {
     console.error('Create menu item error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -92,23 +106,23 @@ router.put('/:id', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        errors: errors.array() 
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
       });
     }
 
-    const { name, description, price, category, image, available } = req.body;
+    const { name, description, price, category, image, available, pointsRequired, pointsEarned, happyHourPrice, happyHourStartTime, happyHourEndTime } = req.body;
 
-    const menuItem = await MenuItem.findOne({ 
-      _id: req.params.id, 
-      hotelId: req.hotelId 
+    const menuItem = await MenuItem.findOne({
+      _id: req.params.id,
+      hotelId: req.hotelId
     });
 
     if (!menuItem) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Menu item not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Menu item not found'
       });
     }
 
@@ -118,8 +132,22 @@ router.put('/:id', [
     if (category) menuItem.category = category;
     if (image !== undefined) menuItem.image = image;
     if (available !== undefined) menuItem.available = available;
+    if (pointsRequired !== undefined) menuItem.pointsRequired = pointsRequired;
+    if (pointsEarned !== undefined) menuItem.pointsEarned = pointsEarned;
+    if (happyHourPrice !== undefined) menuItem.happyHourPrice = happyHourPrice;
+    if (happyHourStartTime !== undefined) menuItem.happyHourStartTime = happyHourStartTime;
+    if (happyHourEndTime !== undefined) menuItem.happyHourEndTime = happyHourEndTime;
 
     await menuItem.save();
+
+    // Emit WebSocket event
+    const io = req.app ? req.app.get('io') : null;
+    if (io) {
+      io.to(`hotel-${req.hotelId}`).emit('menu-updated', {
+        itemId: menuItem._id,
+        action: 'update'
+      });
+    }
 
     res.json({
       success: true,
@@ -128,10 +156,10 @@ router.put('/:id', [
     });
   } catch (error) {
     console.error('Update menu item error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
@@ -141,19 +169,28 @@ router.put('/:id', [
 // @access  Private
 router.delete('/:id', async (req, res) => {
   try {
-    const menuItem = await MenuItem.findOne({ 
-      _id: req.params.id, 
-      hotelId: req.hotelId 
+    const menuItem = await MenuItem.findOne({
+      _id: req.params.id,
+      hotelId: req.hotelId
     });
 
     if (!menuItem) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Menu item not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Menu item not found'
       });
     }
 
     await menuItem.deleteOne();
+
+    // Emit WebSocket event
+    const io = req.app ? req.app.get('io') : null;
+    if (io) {
+      io.to(`hotel-${req.hotelId}`).emit('menu-updated', {
+        itemId: req.params.id,
+        action: 'delete'
+      });
+    }
 
     res.json({
       success: true,
@@ -161,14 +198,25 @@ router.delete('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Delete menu item error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       message: 'Server error',
-      error: error.message 
+      error: error.message
     });
   }
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
 
 

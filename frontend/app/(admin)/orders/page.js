@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { adminAPI } from '@/lib/api';
+import { formatCurrency } from '@/lib/format';
 
 function OrdersContent() {
   const searchParams = useSearchParams();
@@ -159,7 +160,7 @@ function OrdersContent() {
                         {order.items?.length || 0} item(s)
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        ${parseFloat(order.totalAmount).toFixed(2)}
+                        {formatCurrency(order.totalAmount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
@@ -253,7 +254,7 @@ function OrdersContent() {
                   <div>
                     <p className="text-sm text-gray-600">Total Amount</p>
                     <p className="font-semibold text-lg text-primary-600">
-                      ${parseFloat(selectedOrder.totalAmount).toFixed(2)}
+                      {formatCurrency(selectedOrder.totalAmount)}
                     </p>
                   </div>
                 </div>
@@ -269,11 +270,11 @@ function OrdersContent() {
                         <div>
                           <p className="font-semibold">{item.name}</p>
                           <p className="text-sm text-gray-600">
-                            Quantity: {item.quantity} × ${parseFloat(item.price).toFixed(2)}
+                            Quantity: {item.quantity} × {formatCurrency(item.price)}
                           </p>
                         </div>
                         <p className="font-semibold">
-                          ${(parseFloat(item.price) * item.quantity).toFixed(2)}
+                          {formatCurrency(parseFloat(item.price) * item.quantity)}
                         </p>
                       </div>
                     ))}

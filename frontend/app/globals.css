@@ -2,49 +2,172 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+/* 
+  ANTIGRAVITY PREMIUM DESIGN SYSTEM
+  Standardized UI components for Restaurant OS
+*/
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 255, 255, 255;
+
+  --primary: 79, 70, 229;
+  --primary-hover: 67, 56, 202;
+  --secondary: 100, 116, 139;
+  --accent: 236, 72, 153;
+  --success: 16, 185, 129;
+  --warning: 245, 158, 11;
+  --error: 244, 63, 94;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #f8fafc;
+  /* slate-50 */
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Make form inputs consistent across the app */
-@layer base {
-  input,
-  textarea,
-  select {
-    @apply bg-white text-gray-900 placeholder-gray-400;
+.dark body {
+  background-color: #020617; /* slate-950 */
+  color: #f8fafc; /* slate-50 */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbar - Premium Aesthetics */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 70, 229, 0.2);
+}
+
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Premium Component Layer */
+@layer components {
+
+  /* Layout Containers */
+  .premium-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8;
   }
 
-  input::placeholder,
-  textarea::placeholder {
-    @apply text-gray-400;
-    opacity: 1; /* ensure placeholder is visible */
+  /* Cards */
+  .premium-card {
+    @apply bg-white border border-slate-200 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500 overflow-hidden;
+  }
+
+  /* Buttons */
+  .premium-button-primary {
+    @apply px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-[11px] shadow-xl shadow-slate-200 flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-slate-800;
+  }
+
+  .premium-button-secondary {
+    @apply px-8 py-4 bg-white text-slate-600 rounded-2xl font-bold uppercase tracking-widest text-[11px] border border-slate-200 shadow-sm flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-slate-50;
+  }
+
+  .premium-button-accent {
+    @apply px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold uppercase tracking-widest text-[11px] shadow-xl shadow-indigo-100 flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-indigo-700;
+  }
+
+  /* Inputs */
+  .premium-input {
+    @apply w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-medium placeholder:text-slate-400;
+  }
+
+  /* Badges & Labels */
+  .premium-badge {
+    @apply px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm flex items-center gap-1.5;
+  }
+
+  .premium-badge-success {
+    @apply bg-emerald-50 text-emerald-600 border-emerald-100;
+  }
+
+  .premium-badge-warning {
+    @apply bg-amber-50 text-amber-600 border-amber-100;
+  }
+
+  .premium-badge-error {
+    @apply bg-rose-50 text-rose-600 border-rose-100;
+  }
+
+  /* Headings */
+  .premium-h1 {
+    @apply text-3xl font-black text-slate-900 leading-tight uppercase tracking-tighter;
+  }
+
+  .premium-h2 {
+    @apply text-2xl font-bold text-slate-900 leading-tight;
+  }
+
+  .premium-subtext {
+    @apply text-slate-500 text-sm font-medium italic;
+  }
+
+  /* Interactive Elements */
+  .premium-icon-box {
+    @apply h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform hover:scale-105;
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Animations & Glassmorphism */
+.premium-glass {
+  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
   }
 }
 
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
 
+::selection {
+  background: rgba(79, 70, 229, 0.1);
+  color: rgb(79, 70, 229);
+}

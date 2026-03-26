@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { adminAPI } from '@/lib/api';
+import { formatCurrency } from '@/lib/format';
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState([]);
@@ -188,7 +189,7 @@ export default function MenuPage() {
                     <p className="text-gray-700 text-sm mb-3 line-clamp-2">{item.description}</p>
                   )}
                   <p className="text-2xl font-bold text-primary-600 mb-4">
-                    ${parseFloat(item.price).toFixed(2)}
+                    {formatCurrency(item.price)}
                   </p>
                   <div className="flex space-x-2">
                     <button
@@ -324,5 +325,16 @@ export default function MenuPage() {
     </AdminLayout>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 

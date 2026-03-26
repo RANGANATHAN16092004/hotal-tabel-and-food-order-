@@ -18,12 +18,21 @@ const tableSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['available', 'occupied', 'reserved'],
+    enum: ['available', 'occupied', 'reserved', 'dirty'],
     default: 'available'
   },
   qrCode: {
     type: String,
     sparse: true
+  },
+  x: { type: Number, default: 0 },
+  y: { type: Number, default: 0 },
+  width: { type: Number, default: 100 },
+  height: { type: Number, default: 100 },
+  shape: {
+    type: String,
+    enum: ['rect', 'circle'],
+    default: 'rect'
   }
 }, {
   timestamps: true
@@ -33,5 +42,16 @@ const tableSchema = new mongoose.Schema({
 tableSchema.index({ hotelId: 1, tableNumber: 1 }, { unique: true });
 
 module.exports = mongoose.model('Table', tableSchema);
+
+
+
+
+
+
+
+
+
+
+
 
 

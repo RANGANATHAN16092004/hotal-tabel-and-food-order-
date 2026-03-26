@@ -8,7 +8,6 @@ const customerSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Phone number is required'],
     trim: true
   },
   hotelId: {
@@ -19,14 +18,63 @@ const customerSchema = new mongoose.Schema({
   orders: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order'
-  }]
+  }],
+  orderHistory: [{
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order'
+    },
+    orderNumber: {
+      type: String
+    },
+    items: [{
+      name: { type: String },
+      quantity: { type: Number },
+      price: { type: Number }
+    }],
+    totalAmount: { type: Number },
+    status: { type: String },
+    date: { type: Date }
+  }],
+  email: {
+    type: String,
+    lowercase: true,
+    trim: true
+  },
+  address: {
+    type: String,
+    trim: true
+  },
+  profileImage: {
+    type: String,
+    trim: true
+  },
+  coverImage: {
+    type: String,
+    trim: true
+  },
+  preferences: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CustomerPreferences',
+    sparse: true
+  },
+  loyaltyPoints: {
+    type: Number,
+    default: 0,
+    min: 0
+  }
 }, {
   timestamps: true
 });
 
-// Compound index to ensure unique phone numbers per hotel
-customerSchema.index({ hotelId: 1, phone: 1 }, { unique: true });
+// Partial unique indexes to ensure uniqueness only when field is present
+customerSchema.index({ hotelId: 1, phone: 1 }, {
+  unique: true,
+  partialFilterExpression: { phone: { $type: "string" } }
+});
+customerSchema.index({ hotelId: 1, email: 1 }, {
+  unique: true,
+  partialFilterExpression: { email: { $type: "string" } }
+});
 
 module.exports = mongoose.model('Customer', customerSchema);
-
-

@@ -33,6 +33,81 @@ const hotelSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true
+  },
+  logo: {
+    type: String,
+    trim: true
+  },
+  coverImage: {
+    type: String,
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  cuisine: [{
+    type: String
+  }],
+  averageRating: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
+  },
+  operatingHours: {
+    monday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    tuesday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    wednesday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    thursday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    friday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    saturday: { open: String, close: String, isOpen: { type: Boolean, default: true } },
+    sunday: { open: String, close: String, isOpen: { type: Boolean, default: true } }
+  },
+  timezone: {
+    type: String,
+    default: 'UTC'
+  },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  twoFactorSecret: {
+    type: String,
+    sparse: true
+  },
+  allowedIPs: [{
+    type: String
+  }],
+  otp: {
+    type: String,
+    select: false
+  },
+  otpExpires: {
+    type: Date,
+    select: false
+  },
+  secondaryEmails: [{
+    type: String,
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
+  }],
+  hourlyPoll: {
+    itemA: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
+    itemB: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' },
+    votesA: { type: Number, default: 0 },
+    votesB: { type: Number, default: 0 },
+    active: { type: Boolean, default: false },
+    expiresAt: { type: Date }
+  },
+  ecoGoal: {
+    targetScore: { type: Number, default: 90 },
+    currentScore: { type: Number, default: 0 }
   }
 }, {
   timestamps: true
@@ -64,5 +139,8 @@ hotelSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 module.exports = mongoose.model('Hotel', hotelSchema);
+
+
+
 
 
