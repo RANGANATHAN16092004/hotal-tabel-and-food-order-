@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { adminAPI } from '@/lib/api';
 import { adminAuth } from '@/lib/auth';
 import { Camera, Hotel, Upload } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function AdminRegister() {
   const router = useRouter();
