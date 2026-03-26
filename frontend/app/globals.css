@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,8 +8,6 @@
   ANTIGRAVITY PREMIUM DESIGN SYSTEM
   Standardized UI components for Restaurant OS
 */
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   --foreground-rgb: 15, 23, 42;
