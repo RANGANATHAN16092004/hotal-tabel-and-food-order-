@@ -21,27 +21,38 @@ if (!process.env.MONGODB_URI) {
 const app = express();
 const server = http.createServer(app);
 
-// Sanitized origin for WebSockets
-const socketOrigin = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.replace(/\/$/, '') 
-  : 'http://localhost:3000';
+// Dynamic Origin resolution for bulletproof Vercel deployments
+const rawFrontendVar = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : null;
+
+// Reusable origin verifier for both Express and Socket.io
+const handleOrigin = function(origin, callback) {
+  // Allow requests with no origin (like mobile apps, curl, or Postman)
+  if (!origin) return callback(null, true);
+
+  // Auto-allow localhost for local development
+  if (origin.startsWith('http://localhost:')) return callback(null, true);
+
+  // Auto-allow ANY Vercel preview or production domain
+  if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+  // Fallback to exactly what is explicitly written in the FRONTEND_URL variable
+  if (rawFrontendVar && origin === rawFrontendVar) return callback(null, true);
+
+  // If nothing matches, block to prevent cross-site scripting
+  callback(new Error('Not allowed by CORS'));
+};
 
 const io = new Server(server, {
   cors: {
-    origin: socketOrigin,
+    origin: handleOrigin,
     methods: ['GET', 'POST']
   }
 });
 
 // Middleware
-// Ensure no trailing slash in FRONTEND_URL as it breaks strict CORS browser checks
-const allowedOrigin = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.replace(/\/$/, '') 
-  : (process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000');
-
 // CORS configuration
 const corsOptions = {
-  origin: allowedOrigin,
+  origin: handleOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
