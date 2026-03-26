@@ -20,17 +20,28 @@ if (!process.env.MONGODB_URI) {
 
 const app = express();
 const server = http.createServer(app);
+
+// Sanitized origin for WebSockets
+const socketOrigin = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.replace(/\/$/, '') 
+  : 'http://localhost:3000';
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: socketOrigin,
     methods: ['GET', 'POST']
   }
 });
 
 // Middleware
+// Ensure no trailing slash in FRONTEND_URL as it breaks strict CORS browser checks
+const allowedOrigin = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.replace(/\/$/, '') 
+  : (process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000');
+
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000'),
+  origin: allowedOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
